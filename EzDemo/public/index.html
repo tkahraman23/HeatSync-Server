@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Derece Dönüştürücü</title>
+    <style>
+        :root {
+            --bg1: #0e0f14;
+            --bg2: #141827;
+            --glass: rgba(255,255,255,.06);
+            --stroke: rgba(255,255,255,.12);
+            --text: #e9ecf1;
+            --muted: #a7b1c2;
+            --accent: #7dd3fc;
+            --accent-2: #a78bfa; 
+            --ok: #22c55e;
+            --warn: #f59e0b;
+            --err: #ef4444;
+            --radius: 18px;
+            --shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 0 0 1px var(--stroke);
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html, body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            color: var(--text);
+            font: 16px/1.4 system-ui, Segoe UI, Roboto, Arial, sans-serif;
+            background: radial-gradient(1200px 600px at 10% -10%, #1f2937 0%, transparent 60%), radial-gradient(1000px 700px at 110% 10%, #0ea5e9 0%, transparent 55%), linear-gradient(180deg, var(--bg1), var(--bg2));
+            display: grid;
+            place-items: center;
+            padding: 24px;
+        }
+
+        .card {
+            width: min(820px, 96vw);
+            border-radius: var(--radius);
+            background: var(--glass);
+            box-shadow: var(--shadow);
+            backdrop-filter: saturate(140%) blur(16px);
+            border: 1px solid var(--stroke);
+            overflow: hidden;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 22px 22px 10px 22px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            display: grid;
+            place-items: center;
+            color: #0b1220;
+            font-weight: 900;
+            box-shadow: 0 8px 20px rgba(124, 58, 237, .35);
+        }
+
+        .title-wrap {
+            flex: 1
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 20px;
+            letter-spacing: .2px
+        }
+
+        .sub {
+            color: var(--muted);
+            font-size: 13px;
+            margin-top: 2px
+        }
+
+        .content {
+            display: grid;
+            gap: 18px;
+            padding: 10px 22px 22px 22px
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1.2fr .8fr;
+            gap: 18px
+        }
+
+        @media (max-width:720px) {
+            .grid {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .panel {
+            background: rgba(0,0,0,.25);
+            border: 1px solid var(--stroke);
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 6px
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+            align-items: center
+        }
+
+        input[type="number"] {
+            flex: 1;
+            padding: 14px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--stroke);
+            background: rgba(13,16,24,.6);
+            color: var(--text);
+            outline: none;
+        }
+
+            input[type="number"]::placeholder {
+                color: #8b9bb0
+            }
+
+        .btn {
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--stroke);
+            background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+            color: var(--text);
+            cursor: pointer;
+            transition: transform .08s ease, box-shadow .2s ease;
+            user-select: none;
+        }
+
+            .btn:hover {
+                box-shadow: 0 6px 16px rgba(0,0,0,.35)
+            }
+
+            .btn:active {
+                transform: translateY(1px) scale(.99)
+            }
+
+            .btn.primary {
+                background: linear-gradient(135deg, var(--accent), var(--accent-2));
+                border: none;
+                color: #0b1220;
+                font-weight: 700;
+            }
+
+        .seg {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 8px;
+        }
+
+            .seg .opt {
+                border: 1px solid var(--stroke);
+                border-radius: 10px;
+                padding: 10px 8px;
+                text-align: center;
+                cursor: pointer;
+                background: rgba(255,255,255,.03);
+                color: var(--muted);
+                transition: all .15s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+            }
+
+                .seg .opt.active {
+                    color: #0b1220;
+                    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+                    border-color: transparent;
+                }
+
+        .swap {
+            width: 46px;
+            height: 46px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            border: 1px solid var(--stroke);
+            background: rgba(255,255,255,.05);
+            cursor: pointer;
+            transition: transform .2s ease;
+        }
+
+            .swap.spin {
+                transform: rotate(180deg)
+            }
+
+        .result {
+            display: grid;
+            gap: 10px;
+        }
+
+            .result .big {
+                font-size: 28px;
+                font-weight: 800;
+                letter-spacing: .2px;
+                background: linear-gradient(90deg, #fff, #c7d2fe);
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+            }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--muted)
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--ok);
+            box-shadow: 0 0 8px var(--ok)
+        }
+
+        .muted {
+            color: var(--muted)
+        }
+
+        .history {
+            display: grid;
+            gap: 10px;
+            height: 170px;
+            overflow: auto;
+            padding-right: 6px;
+        }
+
+
+        .hist-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: rgba(255,255,255,.04);
+            border: 1px solid var(--stroke);
+            font-size: 14px;
+        }
+
+        .fade-in {
+            animation: fade .25s ease
+        }
+
+        @keyframes fade {
+            from {
+                opacity: 0;
+                transform: translateY(4px)
+            }
+
+            to {
+                opacity: 1;
+                transform: none
+            }
+        }
+
+        .notice {
+            font-size: 13px;
+            color: var(--warn)
+        }
+
+        .error {
+            font-size: 14px;
+            color: var(--err);
+            margin-top: 6px
+        }
+
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,.25);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin .8s linear infinite
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        .footer {
+            padding: 14px 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--stroke);
+            background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+        }
+
+        a {
+            color: #9ddcff;
+            text-decoration: none
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            <div class="logo">°</div>
+            <div class="title-wrap">
+                <h1>Derece Dönüştürücü</h1>
+                <div class="sub">C ↔ F ve C ↔ K dönüşümleri • API destekli</div>
+            </div>
+            <div class="badge"><span class="dot"></span> Sunucu bekleniyor</div>
+        </div>
+
+        <div class="content">
+            <div class="grid">
+                <div class="panel">
+                    <label>Dönüştürme türü</label>
+                    <div class="seg" id="seg">
+                        <div class="opt active" data-type="CtoF" title="Celsius → Fahrenheit">C→F</div>
+                        <div class="opt" data-type="FtoC" title="Fahrenheit → Celsius">F→C</div>
+                        <div class="opt" data-type="CtoK" title="Celsius → Kelvin">C→K</div>
+                        <div class="opt" data-type="KtoC" title="Kelvin → Celsius">K→C</div>
+                    </div>
+                    <label style="margin-top:14px;">Değer</label>
+                    <div class="row">
+                        <input type="number" id="value" placeholder="Sayı giriniz" inputmode="decimal" />
+                        <button class="swap" id="swap" title="Türü sırayla değiştir">
+                            
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M8 7h10m0 0-2.5-2.5M18 7l-2.5 2.5M16 17H6m0 0 2.5-2.5M6 17l2.5 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </button>
+                        <button class="btn primary" id="go">Hesapla</button>
+                    </div>
+                    <div id="msg" class="error" style="display:none"></div>
+                </div>
+
+                <div class="panel result">
+                    <div class="muted">Sonuç</div>
+                    <div id="out" class="big fade-in">–</div>
+                    <div class="notice" id="notice" style="display:none"></div>
+                    <div class="muted" style="margin-top:10px">Geçmiş</div>
+                    <div class="history" id="hist"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="muted">API: <code>/api/convert?type=&lt;CtoF|FtoC|CtoK|KtoC&gt;&amp;value=&lt;number&gt;</code></div>
+            <div class="muted">Klavye: <kbd>Enter</kbd> ile hesapla</div>
+        </div>
+    </div>
+
+    <script>
+        const seg = document.getElementById('seg');
+        const valueEl = document.getElementById('value');
+        const outEl = document.getElementById('out');
+        const goBtn = document.getElementById('go');
+        const msgEl = document.getElementById('msg');
+        const histEl = document.getElementById('hist');
+        const swapBtn = document.getElementById('swap');
+        const badge = document.querySelector('.badge');
+
+        let currentType = 'CtoF';
+        const order = ['CtoF', 'FtoC', 'CtoK', 'KtoC'];
+
+        function setActive(type) {
+            currentType = type;
+            [...seg.children].forEach(el => {
+                el.classList.toggle('active', el.dataset.type === type);
+            });
+            msgEl.style.display = 'none';
+        }
+
+        seg.addEventListener('click', (e) => {
+            const el = e.target.closest('.opt');
+            if (el) setActive(el.dataset.type);
+        });
+
+        swapBtn.addEventListener('click', () => {
+            swapBtn.classList.add('spin');
+            setTimeout(() => swapBtn.classList.remove('spin'), 200);
+            const idx = (order.indexOf(currentType) + 1) % order.length;
+            setActive(order[idx]);
+        });
+
+        valueEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') goBtn.click();
+        });
+
+        function unitFor(type) {
+            if (type === 'CtoF') return '°F';
+            if (type === 'FtoC') return '°C';
+            if (type === 'CtoK') return 'K';
+            if (type === 'KtoC') return '°C';
+            return '';
+        }
+
+        function pushHistory(input, type, out) {
+            const row = document.createElement('div');
+            row.className = 'hist-item fade-in';
+            const map = { CtoF: 'C→F', FtoC: 'F→C', CtoK: 'C→K', KtoC: 'K→C' };
+            row.innerHTML = `<span class="muted">${map[type]} • ${input}</span><strong>${out}</strong>`;
+            histEl.prepend(row);
+            const items = [...histEl.children];
+            if (items.length > 6) items.slice(6).forEach(n => n.remove());
+        }
+
+        async function callAPI(type, value) {
+            const url = `/api/convert?type=${encodeURIComponent(type)}&value=${encodeURIComponent(value)}`;
+            const r = await fetch(url);
+            return r.json();
+        }
+
+        function setBusy(b) {
+            goBtn.disabled = b;
+            goBtn.innerHTML = b ? '<span class="spinner" aria-hidden="true"></span>' : 'Hesapla';
+        }
+
+        goBtn.addEventListener('click', async () => {
+            const raw = valueEl.value.trim();
+            if (raw === '' || isNaN(Number(raw))) {
+                msgEl.textContent = 'Lütfen geçerli bir sayı giriniz!';
+                msgEl.style.display = 'block';
+                return;
+            }
+            setBusy(true);
+            msgEl.style.display = 'none';
+            try {
+                const data = await callAPI(currentType, raw);
+                if (!data.ok) { throw new Error(data.error || 'Hata'); }
+                const n = Number(data.result);
+                const shown = Number.isInteger(n) ? n.toString() : n.toFixed(2);
+                const text = `${shown} ${unitFor(currentType)}`;
+                outEl.textContent = text;
+                pushHistory(raw, currentType, text);
+                badge.innerHTML = '<span class="dot"></span> Çalışıyor';
+            } catch (err) {
+                msgEl.textContent = 'Ağ / API hatası: ' + err.message;
+                msgEl.style.display = 'block';
+                badge.innerHTML = '<span class="dot" style="background:var(--err); box-shadow:0 0 8px var(--err)"></span> Ulaşılamıyor';
+            } finally {
+                setBusy(false);
+            }
+        });
+
+        setActive(currentType);
+        setTimeout(() => valueEl.focus(), 250);
+    </script>
+</body>
+</html>
